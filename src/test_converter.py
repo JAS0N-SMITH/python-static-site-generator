@@ -6,12 +6,14 @@ from converter import text_node_to_html_node
 class TestConverter(unittest.TestCase):
 
     @parameterized.expand([
-        ("text", TextType.TEXT, "Sample text", None, "Sample text", None),
-        ("bold", TextType.BOLD, "Bold text", "b", "Bold text", None),
-        ("italic", TextType.ITALIC, "Italic text", "i", "Italic text", None),
-        ("code", TextType.CODE, "Code snippet", "code", "Code snippet", None),
-        ("link", TextType.LINK, "Click here", "a", "Click here", {"href": "http://example.com"}),
-        ("image", TextType.IMAGE, "Alt text", "img", "", {"alt": "Alt text", "src": "http://example.com/image.png"}),
+        (TextType.TEXT, "Sample text", None, "Sample text", None),
+        (TextType.BOLD, "Bold text", "b", "Bold text", None),
+        (TextType.ITALIC, "Italic text", "i", "Italic text", None),
+        (TextType.CODE, "Code snippet", "code", "Code snippet", None),
+        (TextType.LINK, "Click here", "a",
+         "Click here", {"href": "http://example.com"}),
+        (TextType.IMAGE, "Alt text", "img", "", {
+         "alt": "Alt text", "src": "http://example.com/image.png"}),
     ])
     def test_text_node_to_html_node(self, text_type, text, expected_tag, expected_value, expected_props):
         if text_type == TextType.LINK or text_type == TextType.IMAGE:
