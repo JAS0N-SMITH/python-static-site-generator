@@ -1,6 +1,5 @@
 import unittest
 from parameterized import parameterized
-from htmlnode import HTMLLeafNode
 from textnode import TextNode, TextType
 from converter import text_node_to_html_node
 
