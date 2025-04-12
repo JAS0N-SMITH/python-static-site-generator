@@ -13,7 +13,7 @@ class TestConverter(unittest.TestCase):
         ("link", TextType.LINK, "Click here", "a", "Click here", {"href": "http://example.com"}),
         ("image", TextType.IMAGE, "Alt text", "img", "", {"alt": "Alt text", "src": "http://example.com/image.png"}),
     ])
-    def test_text_node_to_html_node(self, name, text_type, text, expected_tag, expected_value, expected_props):
+    def test_text_node_to_html_node(self, text_type, text, expected_tag, expected_value, expected_props):
         if text_type == TextType.LINK or text_type == TextType.IMAGE:
             text_node = TextNode(text_type=text_type, text=text, url="http://example.com" if text_type == TextType.LINK else "http://example.com/image.png")
         else:
