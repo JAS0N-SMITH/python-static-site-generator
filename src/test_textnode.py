@@ -6,23 +6,27 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 class TestTextNode(unittest.TestCase):
     def setUp(self):
-        self.normal_text_node = TextNode("This is normal text", TextType.NORMAL)
-        self.bold_text_node = TextNode("This is a text node", TextType.BOLD_TEXT)
-        self.italic_text_node = TextNode("This is italic text", TextType.ITALIC_TEXT)
-        self.code_text_node = TextNode("This is code text", TextType.CODE_TEXT)
-        self.link_node = TextNode("This is a link", TextType.LINKS, "http://example.com")
-        self.image_node = TextNode("This is an image", TextType.IMAGES, "http://example.com/image.jpg")
+        self.normal_text_node = TextNode("This is normal text", TextType.TEXT)
+        self.bold_text_node = TextNode("This is a text node", TextType.BOLD)
+        self.italic_text_node = TextNode(
+            "This is italic text", TextType.ITALIC)
+        self.code_text_node = TextNode("This is code text", TextType.CODE)
+        self.link_node = TextNode(
+            "This is a link", TextType.LINK, "http://example.com")
+        self.image_node = TextNode(
+            "This is an image", TextType.IMAGE, "http://example.com/image.jpg")
 
     def test_eq(self):
-        node2 = TextNode("This is a text node", TextType.BOLD_TEXT)
+        node2 = TextNode("This is a text node", TextType.BOLD)
         self.assertEqual(self.bold_text_node, node2)
 
     def test_neq(self):
-        node2 = TextNode("This is a different text node", TextType.BOLD_TEXT)
+        node2 = TextNode("This is a different text node", TextType.BOLD)
         self.assertNotEqual(self.bold_text_node, node2)
 
     def test_repr(self):
-        self.assertEqual(repr(self.bold_text_node), "TextNode(This is a text node, TextType.BOLD_TEXT, None)")
+        self.assertEqual(repr(self.bold_text_node),
+                         "TextNode(This is a text node, BOLD, None)")
 
     def test_str(self):
         self.assertEqual(str(self.bold_text_node), "This is a text node")
@@ -30,22 +34,23 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(str(self.image_node), "![This is an image](http://example.com/image.jpg)")
 
     def test_str_no_url(self):
-        link_node_no_url = TextNode("This is a link", TextType.LINKS)
-        image_node_no_url = TextNode("This is an image", TextType.IMAGES)
+        link_node_no_url = TextNode("This is a link", TextType.LINK)
+        image_node_no_url = TextNode("This is an image", TextType.IMAGE)
         self.assertEqual(str(link_node_no_url), "[This is a link](None)")
         self.assertEqual(str(image_node_no_url), "![This is an image](None)")
 
     def test_str_no_text(self):
-        bold_text_no_text = TextNode("", TextType.BOLD_TEXT)
-        link_no_text = TextNode("", TextType.LINKS, "http://example.com")
-        image_no_text = TextNode("", TextType.IMAGES, "http://example.com/image.jpg")
+        bold_text_no_text = TextNode("", TextType.BOLD)
+        link_no_text = TextNode("", TextType.LINK, "http://example.com")
+        image_no_text = TextNode(
+            "", TextType.IMAGE, "http://example.com/image.jpg")
         self.assertEqual(str(bold_text_no_text), "")
         self.assertEqual(str(link_no_text), "[]")
         self.assertEqual(str(image_no_text), "![]")
 
     def test_str_no_text_no_url(self):
-        link_no_text_no_url = TextNode("", TextType.LINKS)
-        image_no_text_no_url = TextNode("", TextType.IMAGES)
+        link_no_text_no_url = TextNode("", TextType.LINK)
+        image_no_text_no_url = TextNode("", TextType.IMAGE)
         self.assertEqual(str(link_no_text_no_url), "[]")
         self.assertEqual(str(image_no_text_no_url), "![]")
 
@@ -56,15 +61,15 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(str(node_no_type_with_url), "[]")
 
     def test_normal_text(self):
-        normal_text_node = TextNode("This is normal text", TextType.NORMAL)
+        normal_text_node = TextNode("This is normal text", TextType.TEXT)
         self.assertEqual(str(normal_text_node), "This is normal text")
 
     def test_italic_text(self):
-        italic_text_node = TextNode("This is italic text", TextType.ITALIC_TEXT)
+        italic_text_node = TextNode("This is italic text", TextType.ITALIC)
         self.assertEqual(str(italic_text_node), "This is italic text")
 
     def test_code_text(self):
-        code_text_node = TextNode("This is code text", TextType.CODE_TEXT)
+        code_text_node = TextNode("This is code text", TextType.CODE)
         self.assertEqual(str(code_text_node), "This is code text")
 
     def test_empty_textnode(self):
@@ -83,18 +88,20 @@ class TestTextNode(unittest.TestCase):
         self.assertNotEqual(self.bold_text_node, "Not a TextNode")
 
     def test_missing_url_in_links_and_images(self):
-        link_node_no_url = TextNode("This is a link", TextType.LINKS)
-        image_node_no_url = TextNode("This is an image", TextType.IMAGES)
+        link_node_no_url = TextNode("This is a link", TextType.LINK)
+        image_node_no_url = TextNode("This is an image", TextType.IMAGE)
         self.assertEqual(str(link_node_no_url), "[This is a link](None)")
         self.assertEqual(str(image_node_no_url), "![This is an image](None)")
 
     def test_edge_cases_in_string_representation(self):
-        special_char_node = TextNode("Special chars: !@#$%^&*()", TextType.NORMAL)
-        long_text_node = TextNode("A" * 1000, TextType.NORMAL)
-        multiline_text_node = TextNode("Line1\nLine2\nLine3", TextType.NORMAL)
+        special_char_node = TextNode(
+            "Special chars: !@#$%^&*()", TextType.TEXT)
+        long_text_node = TextNode("A" * 1000, TextType.TEXT)
+        multiline_text_node = TextNode("Line1\nLine2\nLine3", TextType.TEXT)
         self.assertEqual(str(special_char_node), "Special chars: !@#$%^&*()")
         self.assertEqual(str(long_text_node), "A" * 1000)
         self.assertEqual(str(multiline_text_node), "Line1\nLine2\nLine3")
+
 
 if __name__ == "__main__":
     unittest.main()

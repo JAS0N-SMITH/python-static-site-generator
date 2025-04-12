@@ -1,13 +1,17 @@
+"""This module defines a TextNode class that represents a text element 
+with various types (normal text, bold, italic, etc.)
+"""
+
 from enum import Enum
 
 
 class TextType(Enum):
-    NORMAL = "Normal text"
-    BOLD_TEXT = "**Bold text**"
-    ITALIC_TEXT = "_Italic text_"
-    CODE_TEXT = "`Code text`"
-    LINKS = "[anchor text](url)"
-    IMAGES = "![alt text](url)"
+    TEXT = "Normal text"
+    BOLD = "**Bold text**"
+    ITALIC = "_Italic text_"
+    CODE = "`Code text`"
+    LINK = "[anchor text](url)"
+    IMAGE = "![alt text](url)"
 
 
 class TextNode:
@@ -25,14 +29,14 @@ class TextNode:
         return self.text == other.text and self.text_type == other.text_type and self.url == other.url
 
     def __repr__(self):
-        return f"TextNode({self.text}, {self.text_type}, {self.url})"
+        return f"TextNode({self.text}, {self.text_type.name if self.text_type else None}, {self.url})"
 
     def __str__(self):
-        if self.text_type == TextType.LINKS:
+        if self.text_type == TextType.LINK:
             if not self.text:
                 return "[]"
             return f"[{self.text}]({self.url or 'None'})"
-        elif self.text_type == TextType.IMAGES:
+        elif self.text_type == TextType.IMAGE:
             if not self.text:
                 return "![]"
             return f"![{self.text}]({self.url or 'None'})"

@@ -1,26 +1,26 @@
-from typing import Optional
+"""
+This module defines the HTMLNode class.
 
-"""define a class called HTMLNode in it.
+The HTMLNode class has 4 data members set in the constructor:
 
-The HTMLNode class should have 4 data members set in the constructor:
-
-    tag - A string representing the HTML tag name (e.g. "p", "a", "h1", etc.)
-    value - A string representing the value of the HTML tag (e.g. the text inside a paragraph)
+    tag - A string representing the HTML tag name (e.g., "p", "a", "h1", etc.)
+    value - A string representing the value of the HTML tag (e.g., the text inside a paragraph)
     children - A list of HTMLNode objects representing the children of this node
     props - A dictionary of key-value pairs representing the attributes of the HTML tag. For example, a link (<a> tag) might have {"href": "https://www.google.com"}
-
 """
 
-class HTMLNode:
-    def __init__(self, tag: str = None, value: str = None, children: list = None, props: dict = None):
-        """
-        Initialize an HTMLNode instance.
 
-        :param tag: The HTML tag name (e.g., "p", "a", "h1", etc.)
-        :param value: The value of the HTML tag (e.g., the text inside a paragraph)
-        :param children: A list of HTMLNode objects representing the children of this node
-        :param props: A dictionary of key-value pairs representing the attributes of the HTML tag
-        """
+class HTMLNode:
+    """
+    Initialize an HTMLNode instance.
+
+    :param tag: The HTML tag name (e.g., "p", "a", "h1", etc.)
+    :param value: The value of the HTML tag (e.g., the text inside a paragraph)
+    :param children: A list of HTMLNode objects representing the children of this node
+    :param props: A dictionary of key-value pairs representing the attributes of the HTML tag
+    """
+
+    def __init__(self, tag: str = None, value: str = None, children: list = None, props: dict = None):
         self.tag = tag
         self.value = value
         self.children = children if children is not None else []
@@ -46,25 +46,83 @@ class HTMLNode:
         for key, value in self.props.items():
             if not isinstance(key, str) or not isinstance(value, str):
                 raise TypeError("props keys and values must be strings")
-        
+
     def to_html(self):
         raise NotImplementedError("to_hml method is not implemented yet")
-    
+
     def props_to_html(self):
         return "".join([f' {key}="{value}"' for key, value in self.props.items()])
-    
+
     def __repr__(self):
         return f"HTMLNode(tag={self.tag}, value={self.value}, children={self.children}, props={self.props})"
-    
+
 # create child class for leaf nodes
+
+
 class HTMLLeafNode(HTMLNode):
+    """
+    Initialize an HTMLLeafNode instance.
+    :param tag: The HTML tag name (e.g., "p", "a", "h1", etc.)
+    :param value: The value of the HTML tag (e.g., the text inside a paragraph)
+    :param props: A dictionary of key-value pairs representing the attributes of the HTML tag
+    """
     def __init__(self, tag: str | None, value: str, props: dict = None):
         super().__init__(tag=tag, value=value, props=props)
         self.children = []
-    
+
     def to_html(self):
         if self.value is None:
             raise ValueError("All leaf nodes must have a value.")
         if self.tag is None:
             return self.value
         return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
+
+
+class HTMLParentNode(HTMLNode):
+    """ 
+    The tag and children arguments are not optional
+    It doesn't take a value argument
+    props is optional
+    (It's the exact opposite of the LeafNode class)
+    :param tag: The HTML tag name (e.g., "p", "a", "h1", etc.)
+    :param children: A list of HTMLNode objects representing the children of this node
+    :param props: A dictionary of key-value pairs representing the attributes of the HTML tag
+    """
+
+    def __init__(self, tag: str, children: list, props: dict = None):
+        super().__init__(tag=tag, value=None, children=children, props=props)
+        self.value = None
+        # Ensure children is always a list
+        if not isinstance(self.children, list):
+            raise TypeError("children must be a list")
+        # Ensure props is always a dictionary
+        if not isinstance(self.props, dict):
+            raise TypeError("props must be a dictionary")
+        # Ensure tag is provided
+        if self.tag is None:
+            raise ValueError("tag must be provided")
+        # Ensure all children are HTMLNode instances
+        for child in self.children:
+            if not isinstance(child, HTMLNode):
+                raise TypeError("children must be HTMLNode instances")
+        # Ensure children are not empty
+        if not self.children:
+            raise ValueError("children must not be empty")
+
+    def to_html(self):
+        """
+        Generate an HTML string representation of the node and its children.
+
+        This method recursively calls `to_html` on each child node, concatenating their
+        HTML representations. The resulting HTML is wrapped between the opening and 
+        closing tags of the parent node.
+
+        :raises ValueError: If the node does not have a tag or if it has no children.
+        :return: A string representing the HTML structure of the node and its children.
+        """
+        if self.tag is None:
+            raise ValueError("All parent nodes must have a tag.")
+        if not self.children:
+            raise ValueError("All parent nodes must have children.")
+        children_html = ''.join(child.to_html() for child in self.children)
+        return f"<{self.tag}{self.props_to_html()}>{children_html}</{self.tag}>"
