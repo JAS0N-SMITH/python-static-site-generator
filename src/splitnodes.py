@@ -47,7 +47,10 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             for i, part in enumerate(parts):
                 if part.strip():  # Ignore empty segments
                     new_nodes.append(
-                        TextNode(part, text_type if i % 2 == 1 else TextType.TEXT)
+                        TextNode(
+                            part,
+                            text_type if i % 2 == 1 else node.text_type or TextType.TEXT
+                        )
                     )
         else:
             new_nodes.append(node)  # Append non-TextNode objects as-is
