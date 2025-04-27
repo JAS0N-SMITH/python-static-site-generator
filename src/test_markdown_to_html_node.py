@@ -72,17 +72,23 @@ class TestMarkdownToHtmlNode(unittest.TestCase):
 
         # Check first list item (italic text)
         self.assertEqual(result.children[0].children[0].tag, "li")
-        self.assertEqual(len(result.children[0].children[0].children), 1)
+        # Two children: italic and plain text
+        self.assertEqual(len(result.children[0].children[0].children), 2)
         self.assertEqual(result.children[0].children[0].children[0].tag, "i")
         self.assertEqual(
             result.children[0].children[0].children[0].value, "italic")
+        self.assertEqual(
+            result.children[0].children[0].children[1].value, " text")
 
         # Check second list item (bold text)
         self.assertEqual(result.children[0].children[1].tag, "li")
-        self.assertEqual(len(result.children[0].children[1].children), 1)
+        # Two children: bold and plain text
+        self.assertEqual(len(result.children[0].children[1].children), 2)
         self.assertEqual(result.children[0].children[1].children[0].tag, "b")
         self.assertEqual(
             result.children[0].children[1].children[0].value, "bold")
+        self.assertEqual(
+            result.children[0].children[1].children[1].value, " text")
 
         # Check third list item (link)
         self.assertEqual(result.children[0].children[2].tag, "li")
