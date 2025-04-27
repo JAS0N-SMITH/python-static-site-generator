@@ -80,9 +80,11 @@ class TestHTMLParentNode(unittest.TestCase):
         self.assertEqual(self.parent_node.to_html(), expected_html)
 
     def test_creation_without_children_raises_error(self):
-        """Test that creating a parent node without children raises ValueError."""
-        with self.assertRaises(ValueError):
+        """Test that creating a parent node without children does not raise an error."""
+        try:
             HTMLParentNode(tag='div', children=[])
+        except ValueError:
+            self.fail("HTMLParentNode raised ValueError unexpectedly!")
 
     def test_creation_without_tag_raises_error(self):
         """Test that creating a parent node without a tag raises ValueError."""

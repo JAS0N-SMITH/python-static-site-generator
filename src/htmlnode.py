@@ -89,7 +89,9 @@ class HTMLParentNode(HTMLNode):
     :param props: A dictionary of key-value pairs representing the attributes of the HTML tag
     """
 
-    def __init__(self, tag: str, children: list, props: dict = None):
+    def __init__(self, tag: str, children: list = None, props: dict = None):
+        if children is None:
+            children = []
         super().__init__(tag=tag, value=None, children=children, props=props)
         self.value = None
         # Ensure children is always a list
@@ -105,9 +107,6 @@ class HTMLParentNode(HTMLNode):
         for child in self.children:
             if not isinstance(child, HTMLNode):
                 raise TypeError("children must be HTMLNode instances")
-        # Ensure children are not empty
-        if not self.children:
-            raise ValueError("children must not be empty")
 
     def to_html(self):
         """
