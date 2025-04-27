@@ -22,6 +22,8 @@ Functions:
 
 from textnode import TextType, TextNode
 from extractor import extract_markdown_images, extract_markdown_links
+import logging
+
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     """
@@ -46,12 +48,13 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             parts = node.text.split(delimiter)
             for i, part in enumerate(parts):
                 if part.strip():  # Ignore empty segments
-                    new_nodes.append(
-                        TextNode(
-                            part,
-                            text_type if i % 2 == 1 else node.text_type or TextType.TEXT
-                        )
+                    new_node = TextNode(
+                        part,
+                        text_type if i % 2 == 1 else node.text_type or TextType.TEXT
                     )
+                    logging.debug(
+                        f"Assigned TextType: {text_type if i % 2 == 1 else node.text_type or TextType.TEXT} to part: {part}")
+                    new_nodes.append(new_node)
         else:
             new_nodes.append(node)  # Append non-TextNode objects as-is
 

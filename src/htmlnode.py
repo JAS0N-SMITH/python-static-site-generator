@@ -1,3 +1,6 @@
+import logging
+
+
 """
 This module defines the HTMLNode class.
 
@@ -66,15 +69,28 @@ class HTMLLeafNode(HTMLNode):
     :param value: The value of the HTML tag (e.g., the text inside a paragraph)
     :param props: A dictionary of key-value pairs representing the attributes of the HTML tag
     """
-    def __init__(self, tag: str | None, value: str, props: dict = None):
+
+    def __init__(self, tag: str | None, value: str = None, props: dict = None):
+        logging.debug(
+            "Creating HTMLLeafNode with tag: %s, value: %s, props: %s", tag, value, props)
+        if tag is None and value is None:
+            logging.error(
+                "HTMLLeafNode is being created without a tag and without a value. Props: %s", props)
+            raise ValueError("HTMLLeafNode must have a tag or a value.")
         super().__init__(tag=tag, value=value, props=props)
         self.children = []
 
     def to_html(self):
+        if self.tag is None:
+            # Return plain text if no tag is provided
+            if self.value is None:
+                raise ValueError("Leaf nodes with no tag must have a value.")
+            return self.value
+        if self.tag == "img":
+            # Handle self-closing tags like <img>
+            return f"<{self.tag}{self.props_to_html()} />"
         if self.value is None:
             raise ValueError("All leaf nodes must have a value.")
-        if self.tag is None:
-            return self.value
         return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
 
 
@@ -122,6 +138,8 @@ class HTMLParentNode(HTMLNode):
         if self.tag is None:
             raise ValueError("All parent nodes must have a tag.")
         if not self.children:
+            logging.error(
+                "Parent node with tag '%s' has no children. Node details: %s", self.tag, self)
             raise ValueError("All parent nodes must have children.")
         children_html = ''.join(child.to_html() for child in self.children)
         return f"<{self.tag}{self.props_to_html()}>{children_html}</{self.tag}>"

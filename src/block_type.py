@@ -7,6 +7,7 @@ class BlockType(Enum):
     QUOTE = "quote"
     UNORDERED_LIST = "unordered_list"
     ORDERED_LIST = "ordered_list"
+    IMAGE = "image"
 
 
 def block_to_block_type(block: str) -> BlockType:
@@ -23,8 +24,8 @@ def block_to_block_type(block: str) -> BlockType:
     if block.startswith("```") and block.endswith("```"):
         return BlockType.CODE
 
-    # Check for quote block
-    if all(line.startswith("> ") for line in lines):
+    # Refine quote block detection
+    if any(line.startswith(">") for line in lines):
         return BlockType.QUOTE
 
     # Check for unordered list block
@@ -37,6 +38,10 @@ def block_to_block_type(block: str) -> BlockType:
             return BlockType.ORDERED_LIST
     except ValueError:
         pass
+
+    # Check for image block
+    if block.startswith("![") and block.endswith(")"):
+        return BlockType.IMAGE
 
     # Default to paragraph
     return BlockType.PARAGRAPH

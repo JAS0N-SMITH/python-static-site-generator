@@ -1,5 +1,6 @@
 import os
 import shutil
+from generate_page import generate_page
 
 
 def copy_static_to_public(static_dir, public_dir):
@@ -20,12 +21,19 @@ def copy_static_to_public(static_dir, public_dir):
             dest_file = os.path.join(
                 public_dir, os.path.relpath(src_file, static_dir))
             shutil.copy2(src_file, dest_file)
-            print(f"Copied: {dest_file}")
 
 def main():
     static_dir = "static"
     public_dir = "public"
+    content_file = "content/index.md"
+    template_file = "template.html"
+    output_file = os.path.join(public_dir, "index.html")
+
+    # Copy static files to public directory
     copy_static_to_public(static_dir, public_dir)
+
+    # Generate the HTML page
+    generate_page(content_file, template_file, output_file)
 
 if __name__ == "__main__":
     main()
