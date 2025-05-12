@@ -178,4 +178,4 @@ cython_debug/
 .DS_Store
 
 # Ignore the public directory where the generated site will live
-public/
+# public/

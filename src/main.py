@@ -25,13 +25,13 @@ def copy_static_to_public(static_dir, public_dir):
 
 def main():
     static_dir = "static"
-    public_dir = "public"
+    public_dir = "docs"  # Changed from 'public' to 'docs' for GitHub Pages
     template_file = "template.html"
 
     # Get basepath from CLI argument or default to '/'
     basepath = sys.argv[1] if len(sys.argv) > 1 else "/"
 
-    # Copy static files to public directory
+    # Copy static files to docs directory
     copy_static_to_public(static_dir, public_dir)
 
     # Generate pages recursively with basepath
