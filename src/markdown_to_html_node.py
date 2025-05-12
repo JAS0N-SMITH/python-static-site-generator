@@ -26,7 +26,8 @@ def markdown_to_html_node(markdown):
         (r'\*\*(.*?)\*\*', "b"),  # Bold
         (r'_(.*?)_', "i"),           # Italic
         (r'\[(.*?)\]\((.*?)\)', "a"),  # Links
-        (r'!\[(.*?)\]\((.*?)\)', "img")  # Images
+        (r'!\[(.*?)\]\((.*?)\)', "img"),  # Images
+        (r'`(.*?)`', "code"),  # Inline code
     ]
 
     # Split the markdown into blocks
@@ -86,36 +87,33 @@ def markdown_to_html_node(markdown):
             # Ensure the parent tag is 'p' and handle inline formatting and links
             children = []
             last_index = 0
+            # Update inline code processing to ensure all inline tags are preserved
             for pattern, tag in inline_patterns:
-                matches = re.finditer(pattern, block)
+                matches = list(re.finditer(pattern, block))
                 for match in matches:
                     start, end = match.span()
                     # Add text before the match
                     if start > last_index:
                         children.append(text_node_to_html_node(
                             TextNode(block[last_index:start], TextType.TEXT)))
-                    # Add the formatted text, link, or image
+                    # Add the formatted text or link
                     if tag == "a":
                         link_text, link_url = match.groups()
                         link_node = HTMLParentNode(tag="a", props={"href": link_url}, children=[
                             text_node_to_html_node(TextNode(link_text, TextType.TEXT))])
                         children.append(link_node)
-                    elif tag == "img":
-                        alt_text, img_url = match.groups()
-                        img_node = HTMLLeafNode(
-                            tag="img", props={"src": img_url, "alt": alt_text}
-                        )
-                        children.append(img_node)
                     elif tag == "i":
                         formatted_text = match.group(1)
-                        formatted_node = TextNode(
-                            formatted_text, TextType.ITALIC)
-                        children.append(text_node_to_html_node(formatted_node))
+                        italic_node = TextNode(formatted_text, TextType.ITALIC)
+                        children.append(text_node_to_html_node(italic_node))
                     elif tag == "b":
                         formatted_text = match.group(1)
-                        formatted_node = TextNode(
-                            formatted_text, TextType.BOLD)
-                        children.append(text_node_to_html_node(formatted_node))
+                        bold_node = TextNode(formatted_text, TextType.BOLD)
+                        children.append(text_node_to_html_node(bold_node))
+                    elif tag == "code":
+                        formatted_text = match.group(1)
+                        code_node = TextNode(formatted_text, TextType.CODE)
+                        children.append(text_node_to_html_node(code_node))
                     last_index = end
             # Add remaining text after the last match
             if last_index < len(block):
@@ -169,6 +167,17 @@ def markdown_to_html_node(markdown):
                             logging.debug("Adding bold node: %s", bold_node)
                             item_children.append(
                                 text_node_to_html_node(bold_node))
+                        elif inline_tag == "code":
+                            formatted_text = match.group(1)
+                            code_node = TextNode(
+                                formatted_text, TextType.CODE)
+                            # Ensure inline <code> tags are processed correctly
+                            # Add debug logging for inline code processing
+                            logging.debug(
+                                "Processing inline code: %s", formatted_text)
+                            logging.debug("Adding code node: %s", code_node)
+                            item_children.append(
+                                text_node_to_html_node(code_node))
                         last_index = end
                 # Add remaining text after the last match
                 if last_index < len(item):
