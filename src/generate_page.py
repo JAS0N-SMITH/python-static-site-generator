@@ -2,7 +2,8 @@ import os
 from markdown_to_html_node import markdown_to_html_node
 from extract_title import extract_title
 
-def generate_page(from_path, template_path, dest_path):
+
+def generate_page(from_path, template_path, dest_path, basepath="/"):
     # Read the markdown file
     with open(from_path, 'r', encoding='utf-8') as markdown_file:
         markdown_content = markdown_file.read()
@@ -20,6 +21,10 @@ def generate_page(from_path, template_path, dest_path):
 
     # Replace placeholders in the template
     full_html = template_content.replace("{{ Title }}", title).replace("{{ Content }}", html_content)
+
+    # Replace href and src paths with basepath
+    full_html = full_html.replace('href="/', 'href="'+basepath)
+    full_html = full_html.replace('src="/', 'src="'+basepath)
 
     # Ensure the destination directory exists
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
